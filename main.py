@@ -26,13 +26,24 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
               -5.7585, -5.0143, -4.2006, -3.3002, -2.5299, -1.7163, -0.8983, -0.0455, 0])
 
 #INPUTS
-grau_poli = 5               #Grau do polinômio
+grau_poli = 6               #Grau do polinômio
 T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
-N = 7                       #Termos Fourier
+N = 10                      #Termos Fourier
 t = sp.symbols('t') 
 
-intervals = [0, 0.0425, 0.0992, 0.1609, 0.2593, 0.3500]
+# intervals = [0, 0.037, 0.0594, 0.0792, 0.1228, 0.1607, 0.1716, 0.2501, 0.350]
+# intervals = [0, 0.0132, 0.0212, 0.0306, 0.037, 0.0423, 0.0594, 0.0871, 0.103, 0.1149, 0.1386, 
+#              0.1716, 0.1893, 0.2092, 0.2232, 0.2501, 0.2736, 0.299, 0.3252, 0.3492]
+# intervals = [0.0099, 0.0212, 0.0306, 0.037, 0.0423, 0.0515, 0.0594, 0.0753, 0.0871, 0.099, 0.1109, 0.1267, 
+#              0.1386, 0.1607, 0.1716, 0.1759, 0.1838, 0.1914, 0.2053, 0.2232, 0.2343, 0.2501, 0.2647, 0.2835, 
+#              0.299, 0.3217, 0.350]
+# intervals = [0, 0.0132, 0.0306, 0.037, 0.0417, 0.0437, 0.0515, 0.0555, 0.0634, 0.0713, 0.0753, 0.0832, 0.0911, 0.103, 0.1069,
+#              0.1188, 0.1347, 0.1426, 0.1607, 0.1716, 0.1759, 0.1838, 0.1914, 0.2053, 0.2232, 0.2343, 0.2501, 0.2647, 0.2835, 
+#              0.299, 0.3217, 0.350]
+intervals = [0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
+             0.1188, 0.1347, 0.1505, 0.1607, 0.1716, 0.1759, 0.1893, 0.1973, 0.2092, 0.2168, 0.2232, 
+             0.2343, 0.2419, 0.2501, 0.2608, 0.2736, 0.291, 0.3029, 0.3148, 0.3252, 0.3362, 0.350]
 
 intervalx = [[] for _ in range(len(intervals) - 1)]
 intervaly = [[] for _ in range(len(intervals) - 1)]
@@ -97,21 +108,15 @@ for i in range(N):
 f = a0 * 1 / 2 + sum(termo)                 # Função
 
 # Pontos Fourier
-xf = list(np.linspace(0, T, 100))           
+xfourier = list(np.linspace(0, T, 100))           
 
 yf = []
-for i in range(len(xf)):
-    yf.append(f.subs(t, xf[i]))
+for i in range(len(xfourier)):
+    yf.append(f.subs(t, xfourier[i]))
+
 
 plt.figure(1)
-plt.plot(intervalx[0], intervaly[0], color = 'red', label = '1° parte')
-plt.plot(intervalx[1], intervaly[1], color = 'green', label = '2° parte')
-plt.plot(intervalx[2], intervaly[2], color = 'blue', label = '3° parte')
-plt.plot(intervalx[3], intervaly[3], color = 'gray', label = '4° parte')
-plt.plot(intervalx[4], intervaly[4], color = 'green', label = '5° parte')
-plt.legend()
-plt.figure(2)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
-plt.plot(xf, yf, color = 'red', label = f'Fourier {N} termos')
+plt.plot(xfourier, yf, color = 'red', label = f'Fourier {N} termos')
 plt.legend()
 plt.show()
