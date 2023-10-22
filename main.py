@@ -27,7 +27,7 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
 
 #INPUTS
 grau_poli = 5               #Grau do polinômio
-T = 1                       #Período
+T = 0.35                       #Período
 w = 2 * np.pi / T           #Frequência
 N = 7                       #Termos Fourier
 t = sp.symbols('t') 
@@ -44,15 +44,12 @@ for i in range(len(x)):
             intervaly[j].append(y[i])
             break
 
-for i in range(len(intervalx)):
-    print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
-
 equations = []
 
 for i in range(len(intervalx)):
     coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
     if grau_poli == 6:
-        equations.append(coeffs[0] * t ** 6 + coeffs[1] * t ** 5 + coeffs[2] * t ** 4 + coeffs[3] * t ** 3 + coeffs[4] * t ** 2 + coefs[5] * t  + coefs[6])
+        equations.append(coeffs[0] * t ** 6 + coeffs[1] * t ** 5 + coeffs[2] * t ** 4 + coeffs[3] * t ** 3 + coeffs[4] * t ** 2 + coeffs[5] * t  + coeffs[6])
     elif grau_poli == 5:
         equations.append(coeffs[0] * t ** 5 + coeffs[1] * t ** 4 + coeffs[2] * t ** 3 + coeffs[3] * t ** 2 + coeffs[4] * t + coeffs[5])
     elif grau_poli == 4:
@@ -64,10 +61,53 @@ for i in range(len(intervalx)):
     elif grau_poli == 1:
         equations.append(coeffs[0] * t + coeffs[1])
 
-for i in range(len(intervalx)):
-    print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
-    print(f"Equação {i+1}: {equations[i]}")
+#revisado!!
 
+# for i in range(len(intervalx)):
+#     print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
+#     print(f"Equação {i+1}: {equations[i]}")
+
+a0_vet = []
+
+for i in range(len(equations) - 1):
+    a0_vet.append(sp.integrate(equations[i], (t, intervals[i], intervals[i + 1])))
+
+a0 = 2 / T * sum(a0_vet)
+
+print(f"esse e o a0: {a0}")
+
+# Cálculo ak
+ak = []
+bk = []
+for i in range(N):
+    a = []
+    b = []
+    for j in range(len(equations)):
+        a.append(sp.integrate(equations[j] * sp.cos((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
+        b.append(sp.integrate(equations[j] * sp.sin((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
+
+    ak.append(2 / T * round(sum(a), 4))     # Termos ak
+    bk.append(2 / T * round(sum(b), 4))     # Termos bk
+
+# Cálculo função final
+we = [0]
+F0 = [a0 * 1 / 2]
+termo = []
+for i in range(N):
+    termo.append(ak[i] * sp.cos((i + 1) * w * t) + bk[i] * sp.sin((i + 1) * w * t))
+    F0.append(ak[i])
+    F0.append(bk[i])
+    we.append((i + 1) * sp.pi)
+    we.append((i + 1) * sp.pi)
+
+f = a0 * 1 / 2 + sum(termo)                 # Função Final de Fourier
+
+# Pontos Função de Fourier
+xf = list(np.linspace(0, T, 100))           
+
+yf = []
+for i in range(len(xf)):
+    yf.append(f.subs(t, xf[i]))
 
 plt.figure(1)
 plt.plot(intervalx[0], intervaly[0], color = 'red', label = '1° parte')
@@ -78,4 +118,6 @@ plt.plot(intervalx[4], intervaly[4], color = 'green', label = '5° parte')
 plt.legend()
 plt.figure(2)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
+plt.plot(xf, yf, color = 'red', label = f'Fourier {N} termos')
+plt.legend()
 plt.show()
