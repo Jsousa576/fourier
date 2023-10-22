@@ -59,7 +59,12 @@ polynomial_fit = np.poly1d(coeffs)
 
 
 plt.figure(1)
-plt.plot(intervalx[0], intervaly[0], color = 'red', label = 'teste')
+plt.plot(intervalx[0], intervaly[0], color = 'red', label = '1° parte')
+plt.plot(intervalx[1], intervaly[1], color = 'green', label = '2° parte')
+plt.plot(intervalx[2], intervaly[2], color = 'blue', label = '3° parte')
+plt.plot(intervalx[3], intervaly[3], color = 'gray', label = '4° parte')
+plt.plot(intervalx[4], intervaly[4], color = 'green', label = '5° parte')
+plt.legend()
 plt.figure(2)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
 plt.show()
