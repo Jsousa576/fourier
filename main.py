@@ -94,9 +94,9 @@ for i in range(N):
     we.append((i + 1) * sp.pi)
     we.append((i + 1) * sp.pi)
 
-f = a0 * 1 / 2 + sum(termo)                 # Função Final de Fourier
+f = a0 * 1 / 2 + sum(termo)                 # Função
 
-# Pontos Função de Fourier
+# Pontos Fourier
 xf = list(np.linspace(0, T, 100))           
 
 yf = []
