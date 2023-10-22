@@ -27,7 +27,7 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
 
 #INPUTS
 grau_poli = 5               #Grau do polinômio
-T = 0.35                       #Período
+T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
 N = 7                       #Termos Fourier
 t = sp.symbols('t') 
