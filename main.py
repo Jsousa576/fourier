@@ -61,12 +61,6 @@ for i in range(len(intervalx)):
     elif grau_poli == 1:
         equations.append(coeffs[0] * t + coeffs[1])
 
-#revisado!!
-
-# for i in range(len(intervalx)):
-#     print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
-#     print(f"Equação {i+1}: {equations[i]}")
-
 a0_vet = []
 
 for i in range(len(equations) - 1):
