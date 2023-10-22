@@ -27,10 +27,39 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
 #INPUTS
 grau_poli = 5
 
-intervalos = np.array([0, 0.0425, 0.0992, 0.1609, 0.2593, 0.3500])
+
+intervals = [0, 0.0425, 0.0992, 0.1609, 0.2593, 0.3500]
+
+intervalx = [[] for _ in range(len(intervals) - 1)]
+intervaly = [[] for _ in range(len(intervals) - 1)]
+
+for i in range(len(x)):
+    for j in range(len(intervals) - 1):
+        if intervals[j] <= x[i] < intervals[j + 1]:
+            intervalx[j].append(x[i])
+            intervaly[j].append(y[i])
+            break
+
+for i in range(len(intervalx)):
+    print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
+
+equations = []
+
+for i in range(len(intervalx)):
+    coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
+    equation = np.poly1d(coeffs)
+    equations.append(equation)
+
+for i in range(len(intervalx)):
+    print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
+    print(f"Equação {i+1}: {equations[i]}")
 
 coeffs = np.polyfit(x, y, grau_poli)
 polynomial_fit = np.poly1d(coeffs)
 
+
+plt.figure(1)
+plt.plot(intervalx[0], intervaly[0], color = 'red', label = 'teste')
+plt.figure(2)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
 plt.show()
