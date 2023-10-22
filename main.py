@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sympy as sp
 
 x = np.array([0, 0.0013, 0.0047, 0.0073, 0.0099, 0.0132, 0.0172, 0.0212, 0.0252, 0.0284, 0.0306, 0.0318, 0.0337, 0.0356, 0.037,
               0.0383, 0.0391, 0.0403, 0.0417, 0.0423, 0.0437, 0.0452, 0.0476, 0.0515, 0.0555, 0.0594, 0.0634, 0.0673, 0.0713,
@@ -25,8 +26,11 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
               -5.7585, -5.0143, -4.2006, -3.3002, -2.5299, -1.7163, -0.8983, -0.0455, 0])
 
 #INPUTS
-grau_poli = 5
-
+grau_poli = 5               #Grau do polinômio
+T = 1                       #Período
+w = 2 * np.pi / T           #Frequência
+N = 7                       #Termos Fourier
+t = sp.symbols('t') 
 
 intervals = [0, 0.0425, 0.0992, 0.1609, 0.2593, 0.3500]
 
@@ -53,9 +57,6 @@ for i in range(len(intervalx)):
 for i in range(len(intervalx)):
     print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
     print(f"Equação {i+1}: {equations[i]}")
-
-coeffs = np.polyfit(x, y, grau_poli)
-polynomial_fit = np.poly1d(coeffs)
 
 
 plt.figure(1)
