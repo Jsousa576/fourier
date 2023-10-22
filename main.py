@@ -51,8 +51,18 @@ equations = []
 
 for i in range(len(intervalx)):
     coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
-    equation = np.poly1d(coeffs)
-    equations.append(equation)
+    if grau_poli == 6:
+        equations.append(coeffs[0] * t ** 6 + coeffs[1] * t ** 5 + coeffs[2] * t ** 4 + coeffs[3] * t ** 3 + coeffs[4] * t ** 2 + coefs[5] * t  + coefs[6])
+    elif grau_poli == 5:
+        equations.append(coeffs[0] * t ** 5 + coeffs[1] * t ** 4 + coeffs[2] * t ** 3 + coeffs[3] * t ** 2 + coeffs[4] * t + coeffs[5])
+    elif grau_poli == 4:
+        equations.append(coeffs[0] * t ** 4 + coeffs[1] * t ** 3 + coeffs[2] * t ** 2 + coeffs[3] * t + coeffs[4])
+    elif grau_poli == 3:
+        equations.append(coeffs[0] * t ** 3 + coeffs[1] * t ** 2 + coeffs[2] * t + coeffs[3])
+    elif grau_poli == 2:
+        equations.append(coeffs[0] * t ** 2 + coeffs[1] * t + coeffs[2])
+    elif grau_poli == 1:
+        equations.append(coeffs[0] * t + coeffs[1])
 
 for i in range(len(intervalx)):
     print(f"Intervalo {i+1} - Dados x: {intervalx[i]}, Dados y: {intervaly[i]}")
