@@ -105,6 +105,7 @@ ccri = 2*np.sqrt(keq*meq)
 omegan = round(np.sqrt(keq/meq), 4)
 zeta = round(np.sqrt(ceq/ccri),4)
 
+
 # Pontos Fourier
 xfourier = list(np.linspace(0, T, 100))           
 
