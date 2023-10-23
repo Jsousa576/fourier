@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
+import math
+from scipy.interpolate import make_interp_spline
 
 x = np.array([0, 0.0013, 0.0047, 0.0073, 0.0099, 0.0132, 0.0172, 0.0212, 0.0252, 0.0284, 0.0306, 0.0318, 0.0337, 0.0356, 0.037,
               0.0383, 0.0391, 0.0403, 0.0417, 0.0423, 0.0437, 0.0452, 0.0476, 0.0515, 0.0555, 0.0594, 0.0634, 0.0673, 0.0713,
@@ -29,7 +31,7 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
 grau_poli = 6               #Grau do polinômio
 T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
-N = 10                      #Termos Fourier
+N = 7                       #Termos Fourier
 t = sp.symbols('t') 
 keq = 300 #N/m
 meq = 5 #kg
@@ -102,9 +104,24 @@ for i in range(N):
 f = a0 * 1 / 2 + sum(result)                 # Função
 
 ccri = 2*np.sqrt(keq*meq)
-omegan = round(np.sqrt(keq/meq), 4)
-zeta = round(np.sqrt(ceq/ccri),4)
+omegan = round(math.sqrt(keq/meq), 4)
+zeta = round(math.sqrt(ceq/ccri),4)
 
+uest = []
+for i in range(len(F0)):
+    uest.append(F0[i]/keq)
+
+beta = []
+for i in range(len(we)):
+    beta.append(round(we[i]/omegan,4))
+
+M = []
+for i in range(len(beta)):
+    M.append(round(1/(math.sqrt(((1-beta[i]**2)**2) + (2*beta[i]*zeta)**2 )),4))
+
+phi = []
+for i in range(len(beta)):
+    phi.append(round(math.atan((2*beta[i]*zeta)/(1-beta[i]**2)),4))
 
 # Pontos Fourier
 xfourier = list(np.linspace(0, T, 100))           
@@ -113,8 +130,45 @@ yf = []
 for i in range(len(xfourier)):
     yf.append(f.subs(t, xfourier[i]))
 
+u=[]
+for i in range(len(F0)):
+    if i == 0:
+        u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
+    else:
+        if i % 2 == 0:
+            u.append(uest[i] * M[i] * sp.sin(we[i] * t - phi[i]))
+        else:
+            u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
+
+
+# Erro Quadrático
+erro = []
+for i in range(len(x)):
+    erro.append((y[i] - f.subs(t, x[i])) ** 2)
+
+erro_quad = sum(erro) / len(x)
+
+print(f'Erro Quadrático {N} termos: {erro_quad * 100}')
+
+# Pontos Deslocamento (Suave)
+u_perm = sum(u)
+y_desloc = []
+x_desloc = np.linspace(0, 5 * T, 100)
+for i in range(len(x_desloc)):
+    y_desloc.append(u_perm.subs(t, x_desloc[i]))
+X_Y_Spline = make_interp_spline(x_desloc, np.array(y_desloc))
+X_ = np.linspace(x_desloc.min(), x_desloc.max(), 500)
+Y_ = X_Y_Spline(X_)
 
 plt.figure(1)
+plt.plot(X_, Y_)
+plt.xlabel('Tempo [s]')
+plt.ylabel('Deslocamento [m]')
+plt.axhline(0, color = 'black')
+plt.legend()
+plt.grid(True)
+
+plt.figure(2)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
 plt.plot(xfourier, yf, color = 'red', label = f'Fourier {N} termos')
 plt.legend()
