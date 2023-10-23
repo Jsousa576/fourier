@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
 import math
+import warnings
 from scipy.interpolate import make_interp_spline
 
 x = np.array([0, 0.0013, 0.0047, 0.0073, 0.0099, 0.0132, 0.0172, 0.0212, 0.0252, 0.0284, 0.0306, 0.0318, 0.0337, 0.0356, 0.037,
@@ -31,124 +32,132 @@ y = np.array([0, 0.7201, 1.7988, 2.5799, 3.2634, 4.0011, 4.5652, 4.8581, 4.5736,
 grau_poli = 6               #Grau do polinômio
 T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
-N = 7                       #Termos Fourier
 t = sp.symbols('t') 
+termos_avaliados = [0,2,4,6,10,12,14,16,18,20]
 keq = 300 #N/m
 meq = 5 #kg
 ceq = 5 #Ns/m
 
-intervals = [0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
-             0.1188, 0.1347, 0.1505, 0.1607, 0.1716, 0.1759, 0.1893, 0.1973, 0.2092, 0.2168, 0.2232, 
-             0.2343, 0.2419, 0.2501, 0.2608, 0.2736, 0.291, 0.3029, 0.3148, 0.3252, 0.3362, 0.350]
+#Eliminar aviso de erros do polyfit
+warnings.filterwarnings('ignore', category=np.RankWarning)
 
-intervalx = [[] for _ in range(len(intervals) - 1)]
-intervaly = [[] for _ in range(len(intervals) - 1)]
+for N in termos_avaliados:
+    intervals = [0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
+                0.1188, 0.1347, 0.1505, 0.1607, 0.1716, 0.1759, 0.1893, 0.1973, 0.2092, 0.2168, 0.2232, 
+                0.2343, 0.2419, 0.2501, 0.2608, 0.2736, 0.291, 0.3029, 0.3148, 0.3252, 0.3362, 0.350]
 
-for i in range(len(x)):
-    for j in range(len(intervals) - 1):
-        if intervals[j] <= x[i] < intervals[j + 1]:
-            intervalx[j].append(x[i])
-            intervaly[j].append(y[i])
-            break
+    intervalx = [[] for _ in range(len(intervals) - 1)]
+    intervaly = [[] for _ in range(len(intervals) - 1)]
 
-equations = []
+    for i in range(len(x)):
+        for j in range(len(intervals) - 1):
+            if intervals[j] <= x[i] < intervals[j + 1]:
+                intervalx[j].append(x[i])
+                intervaly[j].append(y[i])
+                break
 
-for i in range(len(intervalx)):
-    coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
-    if grau_poli == 6:
-        equations.append(coeffs[0] * t ** 6 + coeffs[1] * t ** 5 + coeffs[2] * t ** 4 + coeffs[3] * t ** 3 + coeffs[4] * t ** 2 + coeffs[5] * t  + coeffs[6])
-    elif grau_poli == 5:
-        equations.append(coeffs[0] * t ** 5 + coeffs[1] * t ** 4 + coeffs[2] * t ** 3 + coeffs[3] * t ** 2 + coeffs[4] * t + coeffs[5])
-    elif grau_poli == 4:
-        equations.append(coeffs[0] * t ** 4 + coeffs[1] * t ** 3 + coeffs[2] * t ** 2 + coeffs[3] * t + coeffs[4])
-    elif grau_poli == 3:
-        equations.append(coeffs[0] * t ** 3 + coeffs[1] * t ** 2 + coeffs[2] * t + coeffs[3])
-    elif grau_poli == 2:
-        equations.append(coeffs[0] * t ** 2 + coeffs[1] * t + coeffs[2])
-    elif grau_poli == 1:
-        equations.append(coeffs[0] * t + coeffs[1])
+    equations = []
 
-a0_vet = []
+    for i in range(len(intervalx)):
 
-for i in range(len(equations) - 1):
-    a0_vet.append(sp.integrate(equations[i], (t, intervals[i], intervals[i + 1])))
+        coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
+        if grau_poli == 6:
+            equations.append(coeffs[0] * t ** 6 + coeffs[1] * t ** 5 + coeffs[2] * t ** 4 + coeffs[3] * t ** 3 + coeffs[4] * t ** 2 + coeffs[5] * t  + coeffs[6])
+        elif grau_poli == 5:
+            equations.append(coeffs[0] * t ** 5 + coeffs[1] * t ** 4 + coeffs[2] * t ** 3 + coeffs[3] * t ** 2 + coeffs[4] * t + coeffs[5])
+        elif grau_poli == 4:
+            equations.append(coeffs[0] * t ** 4 + coeffs[1] * t ** 3 + coeffs[2] * t ** 2 + coeffs[3] * t + coeffs[4])
+        elif grau_poli == 3:
+            equations.append(coeffs[0] * t ** 3 + coeffs[1] * t ** 2 + coeffs[2] * t + coeffs[3])
+        elif grau_poli == 2:
+            equations.append(coeffs[0] * t ** 2 + coeffs[1] * t + coeffs[2])
+        elif grau_poli == 1:
+            equations.append(coeffs[0] * t + coeffs[1])
 
-a0 = 2 / T * sum(a0_vet)
+    a0_vet = []
 
-print(f"esse e o a0: {a0}")
+    for i in range(len(equations)):
+        a0_vet.append(sp.integrate(equations[i], (t, intervals[i], intervals[i + 1])))
 
-# Cálculo ak
-ak = []
-bk = []
-for i in range(N):
-    a = []
-    b = []
-    for j in range(len(equations)):
-        a.append(sp.integrate(equations[j] * sp.cos((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
-        b.append(sp.integrate(equations[j] * sp.sin((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
+    a0 = 2 / T * sum(a0_vet)
 
-    ak.append(2 / T * round(sum(a), 4))     # Termos ak
-    bk.append(2 / T * round(sum(b), 4))     # Termos bk
+    # Cálculo ak
+    ak = []
+    bk = []
+    for i in range(N):
+        a = []
+        b = []
+        for j in range(len(equations)):
+            a.append(sp.integrate(equations[j] * sp.cos((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
+            b.append(sp.integrate(equations[j] * sp.sin((i + 1) * w * t), (t, intervals[j], intervals[j + 1])))
 
-# Cálculo função final
-we = [0]
-F0 = [a0 * 1 / 2]
-result = []
-for i in range(N):
-    result.append(ak[i] * sp.cos((i + 1) * w * t) + bk[i] * sp.sin((i + 1) * w * t))
-    F0.append(ak[i])
-    F0.append(bk[i])
-    we.append((i + 1) * sp.pi)
-    we.append((i + 1) * sp.pi)
+        ak.append(2 / T * round(sum(a), 4))     # Termos ak
+        bk.append(2 / T * round(sum(b), 4))     # Termos bk
 
-f = a0 * 1 / 2 + sum(result)                 # Função
+    # Cálculo função final
+    we = [0]
+    F0 = [a0 * 1 / 2]
+    result = []
+    for i in range(N):
+        result.append(ak[i] * sp.cos((i + 1) * w * t) + bk[i] * sp.sin((i + 1) * w * t))
+        F0.append(ak[i])
+        F0.append(bk[i])
+        we.append((i + 1) * sp.pi)
+        we.append((i + 1) * sp.pi)
 
-ccri = 2*np.sqrt(keq*meq)
-omegan = round(math.sqrt(keq/meq), 4)
-zeta = round(math.sqrt(ceq/ccri),4)
+    f = a0 * 1 / 2 + sum(result)                 # Função
 
-uest = []
-for i in range(len(F0)):
-    uest.append(F0[i]/keq)
+    ccri = 2*np.sqrt(keq*meq)
+    omegan = round(math.sqrt(keq/meq), 4)
+    zeta = round(math.sqrt(ceq/ccri),4)
 
-beta = []
-for i in range(len(we)):
-    beta.append(round(we[i]/omegan,4))
+    uest = []
+    for i in range(len(F0)):
+        uest.append(F0[i]/keq)
 
-M = []
-for i in range(len(beta)):
-    M.append(round(1/(math.sqrt(((1-beta[i]**2)**2) + (2*beta[i]*zeta)**2 )),4))
+    beta = []
+    for i in range(len(we)):
+        beta.append(round(we[i]/omegan,4))
 
-phi = []
-for i in range(len(beta)):
-    phi.append(round(math.atan((2*beta[i]*zeta)/(1-beta[i]**2)),4))
+    M = []
+    for i in range(len(beta)):
+        M.append(round(1/(math.sqrt(((1-beta[i]**2)**2) + (2*beta[i]*zeta)**2 )),4))
 
-# Pontos Fourier
-xfourier = list(np.linspace(0, T, 100))           
+    phi = []
+    for i in range(len(beta)):
+        phi.append(round(math.atan((2*beta[i]*zeta)/(1-beta[i]**2)),4))
 
-yf = []
-for i in range(len(xfourier)):
-    yf.append(f.subs(t, xfourier[i]))
+    # Pontos Fourier
+    xfourier = list(np.linspace(0, T, 100))           
 
-u=[]
-for i in range(len(F0)):
-    if i == 0:
-        u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
-    else:
-        if i % 2 == 0:
-            u.append(uest[i] * M[i] * sp.sin(we[i] * t - phi[i]))
-        else:
+    yf = []
+    for i in range(len(xfourier)):
+        yf.append(f.subs(t, xfourier[i]))
+
+    u=[]
+    for i in range(len(F0)):
+        if i == 0:
             u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
+        else:
+            if i % 2 == 0:
+                u.append(uest[i] * M[i] * sp.sin(we[i] * t - phi[i]))
+            else:
+                u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
 
 
-# Erro Quadrático
-erro = []
-for i in range(len(x)):
-    erro.append((y[i] - f.subs(t, x[i])) ** 2)
+    # Erro Quadrático
+    erro = []
+    for i in range(len(x)):
+        erro.append((y[i] - f.subs(t, x[i])) ** 2)
 
-erro_quad = sum(erro) / len(x)
+    erro_quad = sum(erro) / len(x)
 
-print(f'Erro Quadrático {N} termos: {erro_quad * 100}')
+    print(f'Erro Quadrático {N} termos: {erro_quad * 100}')
+
+    # Plot Comparação
+    plt.figure(1)
+    plt.plot(xfourier, yf, label = f'N = {N}')
+    plt.legend()
 
 # Pontos Deslocamento (Suave)
 u_perm = sum(u)
@@ -160,7 +169,7 @@ X_Y_Spline = make_interp_spline(x_desloc, np.array(y_desloc))
 X_ = np.linspace(x_desloc.min(), x_desloc.max(), 500)
 Y_ = X_Y_Spline(X_)
 
-plt.figure(1)
+plt.figure(2)
 plt.plot(X_, Y_)
 plt.xlabel('Tempo [s]')
 plt.ylabel('Deslocamento [m]')
@@ -168,7 +177,7 @@ plt.axhline(0, color = 'black')
 plt.legend()
 plt.grid(True)
 
-plt.figure(2)
+plt.figure(3)
 plt.plot(x, y, color = 'blue', label = 'Função Original')
 plt.plot(xfourier, yf, color = 'red', label = f'Fourier {N} termos')
 plt.legend()
