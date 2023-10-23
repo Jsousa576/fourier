@@ -97,15 +97,15 @@ for i in range(N):
 # Cálculo função final
 we = [0]
 F0 = [a0 * 1 / 2]
-termo = []
+result = []
 for i in range(N):
-    termo.append(ak[i] * sp.cos((i + 1) * w * t) + bk[i] * sp.sin((i + 1) * w * t))
+    result.append(ak[i] * sp.cos((i + 1) * w * t) + bk[i] * sp.sin((i + 1) * w * t))
     F0.append(ak[i])
     F0.append(bk[i])
     we.append((i + 1) * sp.pi)
     we.append((i + 1) * sp.pi)
 
-f = a0 * 1 / 2 + sum(termo)                 # Função
+f = a0 * 1 / 2 + sum(result)                 # Função
 
 # Pontos Fourier
 xfourier = list(np.linspace(0, T, 100))           
