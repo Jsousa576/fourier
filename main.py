@@ -33,7 +33,7 @@ grau_poli = 6               #Grau do polinômio
 T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
 t = sp.symbols('t') 
-termos_avaliados = [0,2,4,6,10,12,14,16,18,20]
+termos_avaliados = [0,20]#,2,4,10,14,16,20,22,24]
 keq = 300 #N/m
 meq = 5 #kg
 ceq = 5 #Ns/m
@@ -42,7 +42,7 @@ ceq = 5 #Ns/m
 warnings.filterwarnings('ignore', category=np.RankWarning)
 
 for N in termos_avaliados:
-    intervals = [0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
+    intervals = [0, 0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
                 0.1188, 0.1347, 0.1505, 0.1607, 0.1716, 0.1759, 0.1893, 0.1973, 0.2092, 0.2168, 0.2232, 
                 0.2343, 0.2419, 0.2501, 0.2608, 0.2736, 0.291, 0.3029, 0.3148, 0.3252, 0.3362, 0.350]
 
@@ -162,7 +162,7 @@ for N in termos_avaliados:
 # Pontos Deslocamento (Suave)
 u_perm = sum(u)
 y_desloc = []
-x_desloc = np.linspace(0, 5 * T, 100)
+x_desloc = np.linspace(0, 5*T, 100)
 for i in range(len(x_desloc)):
     y_desloc.append(u_perm.subs(t, x_desloc[i]))
 X_Y_Spline = make_interp_spline(x_desloc, np.array(y_desloc))
