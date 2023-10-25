@@ -163,7 +163,7 @@ for N in termos_avaliados:
     plt.plot(xfourier, yf, label = f'N = {N}')
     plt.legend()
 
-# Pontos Deslocamento (Suave)
+#Dados do permamente
 u_perm = sum(u)
 y_desloc = []
 x_desloc = np.linspace(0, 5*T, 100)
