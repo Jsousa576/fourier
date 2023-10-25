@@ -33,7 +33,7 @@ grau_poli = 6               #Grau do polinômio
 T = 0.35                    #Período
 w = 2 * np.pi / T           #Frequência
 t = sp.symbols('t') 
-termos_avaliados = [0,20]#,2,4,10,14,16,20,22,24]
+termos_avaliados = [0,20]
 keq = 300 #N/m
 meq = 5 #kg
 ceq = 5 #Ns/m
@@ -41,6 +41,7 @@ ceq = 5 #Ns/m
 #Eliminar aviso de erros do polyfit
 warnings.filterwarnings('ignore', category=np.RankWarning)
 
+#Começo do laço
 for N in termos_avaliados:
     intervals = [0, 0.0099, 0.0172, 0.0212, 0.0284, 0.0318, 0.037, 0.0383, 0.0417, 0.0423, 0.0452, 0.0594, 0.0792, 
                 0.1188, 0.1347, 0.1505, 0.1607, 0.1716, 0.1759, 0.1893, 0.1973, 0.2092, 0.2168, 0.2232, 
@@ -49,6 +50,7 @@ for N in termos_avaliados:
     intervalx = [[] for _ in range(len(intervals) - 1)]
     intervaly = [[] for _ in range(len(intervals) - 1)]
 
+    #Avalia os intervalos selecionados e adiciona na listas dos intervalos
     for i in range(len(x)):
         for j in range(len(intervals) - 1):
             if intervals[j] <= x[i] < intervals[j + 1]:
@@ -58,6 +60,7 @@ for N in termos_avaliados:
 
     equations = []
 
+    #Utilizando o polyfit para descobrir cada equação de cada intervalo até o 6 grau 
     for i in range(len(intervalx)):
 
         coeffs = np.polyfit(intervalx[i], intervaly[i], deg=grau_poli)
@@ -76,12 +79,13 @@ for N in termos_avaliados:
 
     a0_vet = []
 
+    #calculo do a0
     for i in range(len(equations)):
         a0_vet.append(sp.integrate(equations[i], (t, intervals[i], intervals[i + 1])))
 
     a0 = 2 / T * sum(a0_vet)
 
-    # Cálculo ak
+    #realizando o cálculo dos termos ak
     ak = []
     bk = []
     for i in range(N):
@@ -94,7 +98,6 @@ for N in termos_avaliados:
         ak.append(2 / T * round(sum(a), 4))     # Termos ak
         bk.append(2 / T * round(sum(b), 4))     # Termos bk
 
-    # Cálculo função final
     we = [0]
     F0 = [a0 * 1 / 2]
     result = []
@@ -107,6 +110,7 @@ for N in termos_avaliados:
 
     f = a0 * 1 / 2 + sum(result)                 # Função
 
+    #cálculos iniciais de valores do problema
     ccri = 2*np.sqrt(keq*meq)
     omegan = round(math.sqrt(keq/meq), 4)
     zeta = round(math.sqrt(ceq/ccri),4)
@@ -145,7 +149,7 @@ for N in termos_avaliados:
                 u.append(uest[i] * M[i] * sp.cos(we[i] * t - phi[i]))
 
 
-    # Erro Quadrático
+    #Erro Quadrático
     erro = []
     for i in range(len(x)):
         erro.append((y[i] - f.subs(t, x[i])) ** 2)
